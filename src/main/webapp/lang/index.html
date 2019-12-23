@@ -7,6 +7,8 @@
 		<script type="text/javascript" src="/static/vue/vue.js"></script>
 		<script type="text/javascript" src="/static/iview/iview.js"></script>
 		<script type="text/javascript" src="/static/js/axios.js"></script>
+		<script type="text/javascript" src="/static/js/clipboard.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="/static/js/vue-clipboard.min.js" charset="utf-8"></script>
 	</head>
 	<style>
 		.upload{
@@ -97,12 +99,12 @@
 					{
 						title: '操作',
 						key: 'url',
-						width: 120,
+						width: 150,
 						render: (h, params) => {
 							return h('div', [
 								h('Button', {
 									props: {
-										type: 'error',
+										type: 'warning',
 										size: 'small'
 									},
 									on: {
@@ -110,7 +112,22 @@
 											vm.remove(params.row.key, params.index)
 										}
 									}
-								}, '删除')
+								}, '删除'),
+								h('Button', {
+									props: {
+										type: 'info',
+										size: 'small',
+									},
+									on: {
+										click: () => {
+											vm.$copyText(params.row.url).then(function (e) {
+												vm.$Message.success("已复制")
+											}, function (e) {
+												vm.$Message.error("复制失败")
+											})
+										}
+									}
+								}, '复制')
 							]);
 						}
 					}

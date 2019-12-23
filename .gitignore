@@ -4,4 +4,4 @@
 /.project
 /target
 /.metadata
-
+/src/main/resources/qny.properties
