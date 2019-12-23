@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>LANG - 上传文件至七牛云</title>
+		<link rel="stylesheet" type="text/css" href="/static/iview/styles/iview.css">
+		<script type="text/javascript" src="/static/vue/vue.js"></script>
+		<script type="text/javascript" src="/static/iview/iview.js"></script>
+		<script type="text/javascript" src="/static/js/axios.js"></script>
+	</head>
+	<style>
+		.upload{
+            width: 50%;
+            margin: 2% auto;
+        }
+		.secret{
+			width: 160px;
+			float: right;
+		}
+    </style>
+	<body>
+		<div id="app">
+			<div class="upload">
+				<upload :on-success="handleSuccess" :format="['jpg','jpeg','png']" :max-size="100*1024" :on-error="handleError"
+				 :before-upload="handleBefore" action="//up-z2.qiniup.com" type="drag" name="file" show-upload-list="false"
+				 multiple :data="updata" :default-file-list="defaultList">
+					<div style="padding: 20px 0">
+						<icon type="ios-cloud-upload" size="52" style="color: #3399ff"></icon>
+						<p>click or drag files here to upload</p>
+					</div>
+				</upload>
+				<div class="">
+					<tabs value="name1">
+						<tab-pane label="已上传" name="name1">
+							<i-table border :columns="columns" :data="defaultList"></i-table>
+						</tab-pane>
+						<tab-pane label="历史" name="name2">
+							<i-table border :columns="columns" :data="historyList" height="600"></i-table>
+							<page show-elevator show-total :total="page.totalRow" :current="page.pageNumber" :page-size="page.pageSize"
+							 @on-change="getHistoryList"></page>
+						</tab-pane>
+
+					</tabs>
+				</div>
+				<i-input class="secret" v-model="secret"></i-input>
+			</div>
+			
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		let vm = new Vue({
+			el: '#app',
+			data: {
+				updata: {
+					token: '',
+					key: ''
+				},
+				baseUrl: 'http://cdn.abug123.club/',
+				defaultList: [],
+				secret:'',
+				page: {
+					pageNumber: 1,
+					pageSize: 100,
+					totalRow: 0
+				},
+				historyList: [],
+				columns: [{
+						title: '序号',
+						key: 'index',
+						width: 80,
+						render: (h, params) => {
+							return h('div', [
+								h('h', {}, params.index + 1)
+							]);
+						}
+					},
+					{
+						title: 'url',
+						key: 'url'
+					},
+					{
+						title: '图片',
+						key: 'url',
+						render: (h, params) => {
+							return h('div', [
+								h('avatar', {
+									props: {
+										shape: 'square',
+										src: params.row.url,
+										size: 'large'
+									}
+								})
+							]);
+						}
+					},
+					{
+						title: '操作',
+						key: 'url',
+						width: 120,
+						render: (h, params) => {
+							return h('div', [
+								h('Button', {
+									props: {
+										type: 'error',
+										size: 'small'
+									},
+									on: {
+										click: () => {
+											vm.remove(params.row.key, params.index)
+										}
+									}
+								}, '删除')
+							]);
+						}
+					}
+				],
+			},
+
+			methods: {
+				getToken() {
+					// 为给定 ID 的 user 创建请求
+					axios.get('/qny/getToken')
+						.then(function(res) {
+							if (res.data.state == 'ok') {
+								vm.updata.token = res.data.token;
+							}
+						})
+				},
+				handleSuccess(res) {
+					var item = {
+						name: res.key,
+						url: this.baseUrl + "" + res.key,
+						key: res.key
+					}
+					this.defaultList.push(item);
+				},
+				handleError(res) {
+					console.log(res)
+				},
+				handleBefore(file) {
+					let arr = file.name.split('.');
+					this.updata.key = this.getDate() + '.' + arr[arr.length - 1];
+				},
+				getHistoryList(pageNumber) {
+					this.page.pageNumber = pageNumber ? pageNumber : 1;
+					axios.get('/qny/getAllImage', {
+							params: this.page
+						})
+						.then(res => {
+							this.page.totalRow = res.data.data.totalRow;
+							this.historyList = res.data.data.list.map(e => {
+								let obj = {
+									name: e.key,
+									url: this.baseUrl + "" + e.key,
+									key: e.key
+								}
+								return obj;
+							})
+						})
+				},
+				remove(key, index) {
+					// 为给定 ID 的 user 创建请求
+					axios.get('/qny/deleteImage', {
+							params: {
+								key: key,
+								secret:this.secret
+							}
+						})
+						.then(function(res) {
+							if (res.data.state == 'ok') {
+								vm.historyList.splice(index, 1)
+								vm.$Message.success("删除成功，千牛云服务器缓存")
+							} else {
+								vm.$Message.error(res.data.msg)
+							}
+						})
+				},
+				getDate() {
+					let date = new Date();
+					let str = '' + date.getFullYear();
+					str += '-' + (date.getMonth() + 1);
+					str += '-' + date.getDate();
+					str += '_' + date.getHours();
+					str += '' + date.getMinutes();
+					str += '' + date.getSeconds();
+					str += '' + date.getMilliseconds();
+					return str;
+				}
+			},
+			created() {
+				this.getToken();
+				this.getHistoryList();
+			}
+		})
+	</script>
+</html>
