@@ -7,42 +7,23 @@
   
   
   <dependencies>
-        <!-- api插件 -->
-        <dependency>
-            <groupId>com.iipcloud</groupId>
-            <artifactId>common-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.jfinal/jfinal -->
 		<dependency>
 		    <groupId>com.jfinal</groupId>
 		    <artifactId>jfinal</artifactId>
 		    <version>4.7</version>
 		</dependency>
-        
         <dependency>
             <groupId>com.jfinal</groupId>
             <artifactId>jetty-server</artifactId>
             <version>2019.3</version>
             <scope>provided</scope>
         </dependency>
-        
-   
-        <!-- HuTool 工具包   文档地址 https://www.hutool.club/docs/#/ -->
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>4.6.8</version>
-        </dependency>
-        
-        
          <dependency>
             <groupId>com.qiniu</groupId>
             <artifactId>qiniu-java-sdk</artifactId>
             <version>[7.2.0, 7.2.99]</version>
         </dependency>
-        
-        
     </dependencies>
   
   
