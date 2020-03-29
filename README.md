@@ -10,7 +10,7 @@
 #### 部署
 
 1. 申请七牛空间 获取到（accessKey secretKey 七牛云秘钥对  bucket 存储空间）
-2. 如图![image](http://cdn.abug123.club/2019-12-23_175159367.png)
+2. 如图![image](http://lang.sliver.fun/2019-12-23_175159367.png)
 3. 外链域名 （ 以上都是七牛云的配置 可参考https://developer.qiniu.com/af/kb/1479/how-to-access-or-locate-the-access-key-and-secret-key） 
 4. secret是删除的秘钥 （因为没做权限 在删除上做了一下简单限制）
 5. 放到tomcat里run
